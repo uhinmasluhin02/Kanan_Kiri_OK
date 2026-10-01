@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Loncat Kiri-Kanan!</title>
+<style>
+:root{--bg:#fff7e6;--card:#fff;--ink:#2b2140;--mut:#6b6280;--pri:#6c3df4;--ok:#1fb86a;--no:#f0476b;--line:#e8dfcf;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17122a;--card:#241d3d;--ink:#f4efff;--mut:#a89fc4;--line:#3a3160}}
+:root[data-theme="dark"]{--bg:#17122a;--card:#241d3d;--ink:#f4efff;--mut:#a89fc4;--line:#3a3160}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Baloo 2","Trebuchet MS",system-ui,sans-serif;min-height:100%}
+.wrap{max-width:980px;margin:0 auto;padding:14px}
+h1{margin:6px 0 2px;font-size:clamp(26px,5vw,40px)}
+.sub{color:var(--mut);margin:0 0 14px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px}
+label{font-weight:700;display:block;margin:8px 0 4px}
+textarea,input[type=number]{width:100%;border:2px solid var(--line);border-radius:12px;padding:10px;font:inherit;background:var(--bg);color:var(--ink)}
+textarea{min-height:110px}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+button{font:inherit;font-weight:800;border:0;border-radius:14px;padding:12px 18px;cursor:pointer;background:var(--pri);color:#fff}
+button.alt{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+button.sel{outline:4px solid var(--pri)}
+.big{font-size:20px;padding:14px 26px;width:100%}
+.hide{display:none!important}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.chip{background:var(--card);border:2px solid var(--line);border-radius:999px;padding:4px 14px;font-weight:700}
+.chip.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.q{font-size:clamp(20px,3.6vw,30px);font-weight:800;text-align:center;padding:10px}
+.stage{position:relative;max-width:640px;margin:0 auto;aspect-ratio:4/3;background:#000;border-radius:18px;overflow:hidden}
+.stage video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.zone{position:absolute;top:0;bottom:0;width:37.5%;display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px;font-weight:800;color:#fff;font-size:clamp(16px,3vw,26px);text-shadow:0 2px 6px #0008}
+.zl{left:0;background:#1fb86a66}.zr{right:0;background:#f0476b66}
+.mid{position:absolute;left:37.5%;right:37.5%;top:0;bottom:0;border-left:3px dashed #fff8;border-right:3px dashed #fff8;display:flex;align-items:center;justify-content:center}
+#cd{font-size:clamp(60px,14vw,120px);font-weight:900;color:#fff;text-shadow:0 4px 14px #000a}
+#msg{text-align:center;font-weight:800;font-size:20px;margin:10px 0;min-height:30px}
+.res{text-align:center}
+.res .t{font-size:clamp(30px,6vw,52px);font-weight:900}
+.ok{color:var(--ok)}.no{color:var(--no)}
+.score{display:flex;justify-content:space-between;padding:6px 10px;border-radius:10px;background:var(--bg);margin:4px 0;font-weight:700}
+</style></head>
+<body><div class="wrap">
+<h1>🦘 Loncat Benar-Salah!</h1>
+<p class="sub">Ice breaking — berdiri di tengah kamera, lalu loncat ke kiri (BENAR) atau kanan (SALAH).</p>
+
+<section id="setup">
+ <div class="card">
+  <label>Mode</label>
+  <div class="row"><button id="mI" class="sel" onclick="setMode('I')">👤 Individu</button><button id="mG" class="alt" onclick="setMode('G')">👥 Kelompok</button></div>
+  <label id="lN">Nama siswa (satu per baris)</label>
+  <textarea id="names">Andi
+Bunga
+Citra
+Dimas</textarea>
+  <label>Jumlah putaran per peserta</label>
+  <input type="number" id="rounds" value="2" min="1" max="5">
+ </div>
+ <div class="card">
+  <label>Bank soal (format: pernyataan | B atau S) — bisa diganti sesuai materi basa Sunda</label>
+  <textarea id="qs" style="min-height:200px">Basa loma dipaké pikeun ngobrol jeung babaturan sapantaran. | B
+Kecap "dahar" mangrupa kecap basa loma. | B
+Kecap "indit" mangrupa basa loma, lemesna "angkat". | B
+Basa lemes dipaké nalika nyarita ka guru jeung kolot. | B
+Kecap "imah" mangrupa basa lemes. | S
+Kecap "bumi" mangrupa basa lemes tina "imah". | B
+Kecap "nyokot" mangrupa basa lemes. | S
+Kecap lemes pikeun "sare" nyaéta "kulem" atawa "tilem". | B
+Nyarita ka guru kudu maké basa loma. | S
+Kecap "ceuk" mangrupa basa loma, lemesna "saur". | B
+Kecap "kuring" mangrupa basa loma, lemesna "abdi". | B
+Kecap "anjeun" dipaké pikeun ngahormat batur. | B
+Kecap "maca" mangrupa basa lemes. | S
+Kecap "maos" mangrupa basa lemes tina "maca". | B
+Kecap lemes pikeun "datang" nyaéta "dongkap". | B
+Kecap "ngomong" mangrupa basa lemes. | S
+Kecap "nyarios" mangrupa basa lemes tina "ngomong". | B
+Kecap "manéh" pantes dipaké nalika nyarita ka guru. | S
+Kecap "kolot" mangrupa basa lemes. | S
+Kecap "ningali" mangrupa basa loma tina "nempo". | S</textarea>
+ </div>
+ <button class="big" onclick="start()">🎥 Mulai Game & Aktifkan Kamera</button>
+ <p class="sub" style="margin-top:8px">Jika kamera tidak bisa dipakai, game tetap jalan: guru menekan tombol/panah ← → sebagai jawaban.</p>
+</section>
+
+<section id="game" class="hide">
+ <div class="chips" id="chips"></div>
+ <div class="card"><div class="q" id="q"></div></div>
+ <div class="stage">
+  <video id="v" autoplay playsinline muted></video>
+  <div class="zone zl">⬅ BENAR</div><div class="zone zr">SALAH ➡</div>
+  <div class="mid"><div id="cd"></div></div>
+ </div>
+ <div id="msg"></div>
+ <div id="resBox" class="card res hide">
+  <div class="t" id="resT"></div><div id="resS" class="sub"></div>
+  <div class="row" style="margin:8px 0">
+   <button class="alt" onclick="override('L')">⬅ Ubah: Kiri (Benar)</button>
+   <button class="alt" onclick="override('R')">Ubah: Kanan (Salah) ➡</button>
+  </div>
+  <button class="big" id="nextBtn" onclick="nextTurn()">Lanjut ▶</button>
+ </div>
+ <button class="big hide" id="goBtn" onclick="playTurn()">▶ Mulai Giliran</button>
+</section>
+
+<section id="end" class="hide">
+ <div class="card res"><div class="t">🏆 Hasil Akhir</div><div id="board"></div>
+ <button class="big" onclick="location.reload()">Main Lagi</button></div>
+</section>
+</div>
+<canvas id="cv" width="64" height="48" class="hide"></canvas>
+<script>
+const $=id=>document.getElementById(id);
+let mode='I',players=[],scores={},Q=[],order=[],turn=0,cur=null,stream=null,res=null,busy=false;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const ctx=$('cv').getContext('2d',{willReadFrequently:true});
+function setMode(m){mode=m;$('mI').className=m=='I'?'sel':'alt';$('mG').className=m=='G'?'sel':'alt';
+ $('lN').textContent=m=='I'?'Nama siswa (satu per baris)':'Nama kelompok (satu per baris)';
+ $('names').value=m=='I'?'Andi\nBunga\nCitra\nDimas':'Kelompok Elang\nKelompok Harimau\nKelompok Naga';}
+function beep(f,d){try{const a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.frequency.value=f;o.connect(g);g.connect(a.destination);g.gain.value=.15;o.start();o.stop(a.currentTime+d/1000)}catch(e){}}
+async function start(){
+ players=$('names').value.split('\n').map(s=>s.trim()).filter(Boolean);
+ Q=$('qs').value.split('\n').map(l=>{const p=l.split('|');return p.length>1?{t:p[0].trim(),a:p[1].trim().toUpperCase().startsWith('B')?'L':'R'}:null}).filter(Boolean);
+ if(players.length<1||Q.length<1){alert('Isi nama peserta dan soal dulu ya.');return}
+ const r=Math.max(1,+$('rounds').value||1);
+ order=[];for(let i=0;i<r;i++)order.push(...players);
+ players.forEach(p=>scores[p]=0);
+ Q.sort(()=>Math.random()-.5);
+ try{stream=await navigator.mediaDevices.getUserMedia({video:{width:640,height:480}});$('v').srcObject=stream}catch(e){stream=null;alert('Kamera tidak aktif. Mode manual: pakai tombol/panah ← →.')}
+ $('setup').classList.add('hide');$('game').classList.remove('hide');showTurn();
+}
+function renderChips(){
+ $('chips').innerHTML=players.map(p=>`<div class="chip ${order[turn]==p?'on':''}">${p}: ${scores[p]}</div>`).join('');
+}
+function showTurn(){
+ renderChips();$('resBox').classList.add('hide');$('goBtn').classList.remove('hide');
+ $('q').textContent=(mode=='I'?'Giliran: ':'Giliran kelompok: ')+order[turn]+' — siap berdiri di tengah!';
+ $('msg').textContent='Giliran '+(turn+1)+' dari '+order.length;$('cd').textContent='';
+}
+function grab(){
+ const v=$('v');ctx.save();ctx.scale(-1,1);ctx.drawImage(v,-64,0,64,48);ctx.restore();
+ const d=ctx.getImageData(0,0,64,48).data,a=new Float32Array(3072);
+ for(let i=0;i<3072;i++)a[i]=.3*d[i*4]+.59*d[i*4+1]+.11*d[i*4+2];return a;
+}
+function diff(a,b){let L=0,R=0;
+ for(let y=0;y<48;y++)for(let x=0;x<64;x++){const i=y*64+x;
+  if(Math.abs(a[i]-b[i])>38){if(x<24)L++;else if(x>=40)R++}}
+ return{L:L/1152,R:R/1152};}
+async function count(n,label){for(let i=n;i>0;i--){$('cd').textContent=i;$('msg').textContent=label;beep(i==1?880:520,120);await sleep(1000)}$('cd').textContent=''}
+async function playTurn(){
+ if(busy)return;busy=true;$('goBtn').classList.add('hide');$('resBox').classList.add('hide');
+ cur=Q[turn%Q.length];$('q').textContent=cur.t;
+ await count(5,'📖 Baca soal & berdiri di TENGAH');
+ let base=stream?grab():null;
+ $('cd').textContent='';$('msg').textContent='🦘 LONCAT SEKARANG! Kiri = BENAR, Kanan = SALAH';beep(1000,300);
+ let mL=0,mR=0;
+ for(let i=0;i<30;i++){await sleep(150);
+  if(stream&&i>=12){const d=diff(base,grab());mL=Math.max(mL,d.L);mR=Math.max(mR,d.R)}
+  $('cd').textContent=Math.ceil((30-i)/6.7)}
+ $('cd').textContent='';$('msg').textContent='';
+ let side=null;
+ if(stream&&Math.max(mL,mR)>0.07)side=mL>=mR?'L':'R';
+ res=null;busy=false;applyResult(side,!stream||!side);
+}
+let lastPts=0;
+function applyResult(side,manual){
+ const p=order[turn];
+ if(res)scores[p]-=lastPts;
+ res={side};
+ const ok=side&&side===cur.a;lastPts=ok?10:0;scores[p]+=lastPts;
+ $('resBox').classList.remove('hide');
+ $('resT').innerHTML=!side?'<span class="no">❓ Tidak terdeteksi</span>':ok?'<span class="ok">✅ BENAR! +10</span>':'<span class="no">❌ SALAH</span>';
+ $('resS').textContent=(side?'Terdeteksi loncat ke '+(side=='L'?'KIRI (Benar)':'KANAN (Salah)')+'. ':'')+'Jawaban yang tepat: '+(cur.a=='L'?'BENAR (kiri)':'SALAH (kanan)')+(manual?' — pilih arah manual bila perlu.':'');
+ beep(ok?880:200,350);renderChips();
+}
+function override(s){if(cur&&!busy&&!$('resBox').classList.contains('hide'))applyResult(s,false)}
+function nextTurn(){turn++;if(turn>=order.length)return finish();showTurn()}
+function finish(){
+ $('game').classList.add('hide');$('end').classList.remove('hide');
+ if(stream)stream.getTracks().forEach(t=>t.stop());
+ const s=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+ $('board').innerHTML=s.map((e,i)=>`<div class="score"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${e[0]}</span><span>${e[1]} poin</span></div>`).join('');
+}
+addEventListener('keydown',e=>{if(e.key=='ArrowLeft')override('L');if(e.key=='ArrowRight')override('R')});
+</script></body></html>
